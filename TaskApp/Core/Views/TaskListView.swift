@@ -12,16 +12,20 @@ struct TaskListView: View {
 
     var body: some View {
         VStack{
-            List(viewModel.tasks) { task in
-                TaskRowView(task: task, toggleCompletion: {
-                    viewModel.toggleCompletion(task:task)
-                })
-            }
-            .toolbar {
-                Button("Añadir Tarea") {
-                    viewModel.addTask("nuevo")
+            NavigationStack{
+                List($viewModel.tasks) { $task in
+                    NavigationLink(destination: TaskDetailView(task: $task)){
+                        TaskRowView(task: task, toggleCompletion: {
+                            viewModel.toggleCompletion(task:task)
+                        })}
                 }
-            }.navigationTitle("Tareas")
+                .toolbar {
+                    Button("Añadir Tarea") {
+                        let newTask = Task(title:"Nueva Tarea")
+                        viewModel.addTask(task:newTask)
+                    }
+                }.navigationTitle("Tareas")
+            }
         }
     }
 }
