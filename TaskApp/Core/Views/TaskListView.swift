@@ -13,11 +13,23 @@ struct TaskListView: View {
     var body: some View {
         VStack{
             NavigationStack{
-                List($viewModel.tasks) { $task in
-                    NavigationLink(destination: TaskDetailView(task: $task)){
-                        TaskRowView(task: task, toggleCompletion: {
-                            viewModel.toggleCompletion(task:task)
-                        })}
+                List {
+                    ForEach($viewModel.tasks) { $task in
+                        NavigationLink(destination: TaskDetailView(task: $task)){
+                            TaskRowView(task: task, toggleCompletion: {
+                                viewModel.toggleCompletion(task:task)
+                            }).contextMenu {
+                                Button("Eliminar Tarea") {
+                                    if let index = viewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                                        viewModel.removeTasks(atOffsets: IndexSet(integer: index))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .onDelete { indexSet in
+                        viewModel.removeTasks(atOffsets: indexSet)
+                    }
                 }
                 .toolbar {
                     Button("Añadir Tarea") {

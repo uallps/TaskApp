@@ -31,6 +31,11 @@ struct TaskRowView: View {
                         .font(.caption)
                         .foregroundColor(priorityColor(for: priority))
                 }
+                if AppConfig.enableReminders, let reminderDate = task.reminderDate {
+                    Label("Recordatorio: \(reminderDate.formatted(date: .abbreviated, time: .shortened))", systemImage: "bell")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
             }
         }
     }

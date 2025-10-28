@@ -12,6 +12,7 @@ struct Task: Identifiable {
     var isCompleted: Bool = false
     var dueDate: Date? 
     var priority: Priority?
+    var reminderDate: Date?
 }
 
 enum Priority: String, Codable {

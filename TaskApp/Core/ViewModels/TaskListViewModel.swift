@@ -6,6 +6,7 @@
 //
 import Foundation
 import Combine
+import SwiftUI
 
 class TaskListViewModel: ObservableObject {
     @Published var tasks: [Task] = [
@@ -17,11 +18,14 @@ class TaskListViewModel: ObservableObject {
     func addTask(task: Task) {
         tasks.append(task)
     }
+
+    func removeTasks(atOffsets offsets: IndexSet) {
+        tasks.remove(atOffsets: offsets)
+    }
     
     func toggleCompletion(task: Task) {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].isCompleted.toggle()
         }
-        // hola
     }
 }
