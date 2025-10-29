@@ -26,7 +26,7 @@ jobs:
         include:
           - platform: iOS
             sdk: iphonesimulator
-            destination: "platform=iOS Simulator,name=Any iOS Simulator Device"
+            destination: "platform=iOS Simulator,OS=26.0.1,name=iPhone 17"
             artifact-name: ios-build
           - platform: macOS
             sdk: macosx
@@ -92,6 +92,22 @@ jobs:
         with:
           name: macos-build
           path: ./artifacts/macos
+ 
+      - name: Prepare release artifacts
+        run: |
+          echo "Zipping iOS artifacts..."
+          if [ -d ./artifacts/ios ]; then
+            (cd ./artifacts/ios && zip -r ../ios-build.zip .) || true
+          else
+            echo "No iOS artifacts found at ./artifacts/ios"
+          fi
+
+          echo "Zipping macOS artifacts..."
+          if [ -d ./artifacts/macos ]; then
+            (cd ./artifacts/macos && zip -r ../macos-build.zip .) || true
+          else
+            echo "No macOS artifacts found at ./artifacts/macos"
+          fi
 
       - name: Get version from commit
         id: version
