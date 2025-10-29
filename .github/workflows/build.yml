@@ -137,7 +137,8 @@ jobs:
           prerelease: false
           generate_release_notes: true
           files: |
-            artifacts/**/*
+            artifacts/ios-build.zip
+            artifacts/macos-build.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
