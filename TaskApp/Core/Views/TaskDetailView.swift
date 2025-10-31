@@ -8,14 +8,17 @@
 import SwiftUI
 
 struct TaskDetailView: View {
-    @Binding var task: Task;
+    @Binding var task: Task
+    var onSave: (() -> Void)?
+    @Environment(\.dismiss) private var dismiss
+
+    @EnvironmentObject private var AppConfig: AppConfig
     
     var body: some View {
         HStack() {
             Spacer()
             Form {
                 TextField("Título de la tarea", text: $task.title)
-                
                 Section(header: Text("Detalles de la Tarea")) {
                     Toggle(isOn: $task.isCompleted) {
                         Text("Completada")
@@ -74,6 +77,9 @@ struct TaskDetailView: View {
                 }
             }
             .navigationTitle($task.title)
+            .onDisappear {
+                onSave?()
+            }
         }
         Spacer()
     }

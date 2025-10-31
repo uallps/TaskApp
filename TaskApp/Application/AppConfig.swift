@@ -4,9 +4,16 @@
 //
 //  Created by Francisco José García García on 15/10/25.
 //
+import SwiftUI
+import Combine
 
-struct AppConfig {
-    static var showDueDates: Bool = true
-    static var showPriorities: Bool = true
-    static var enableReminders: Bool = true
+class AppConfig: ObservableObject {
+    @AppStorage("showDueDates")
+    var showDueDates: Bool = true
+
+    @AppStorage("showPriorities")
+    var showPriorities: Bool = true
+
+    @AppStorage("enableReminders")
+    var enableReminders: Bool = true
 }

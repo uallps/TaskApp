@@ -12,6 +12,7 @@ struct TaskRowView: View {
     let task: Task
     let toggleCompletion : () -> Void
     
+    @EnvironmentObject private var AppConfig: AppConfig
     
     var body: some View {
         HStack {
