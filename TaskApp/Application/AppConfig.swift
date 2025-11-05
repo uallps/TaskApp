@@ -16,4 +16,23 @@ class AppConfig: ObservableObject {
 
     @AppStorage("enableReminders")
     var enableReminders: Bool = true
+
+    @AppStorage("storageType")
+    var storageType: StorageType = .json
+
+    var storageProvider: StorageProvider {
+        switch storageType {
+        case .swiftData:
+            return SwiftDataStorageProvider.shared
+        case .json:
+            return JSONStorageProvider.shared
+        }
+    }
+}
+
+enum StorageType: String, CaseIterable, Identifiable {
+    case swiftData = "SwiftData Storage"
+    case json = "JSON Storage"
+
+    var id: String { self.rawValue }
 }

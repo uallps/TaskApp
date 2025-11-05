@@ -10,12 +10,16 @@ import SwiftUI
 @main
 struct TaskApp: App {
     @State private var selectedDetailView: String?
+    
+    private var storageProvider: StorageProvider {
+        AppConfig().storageProvider
+    }
 
     var body: some Scene {
         WindowGroup{
             #if os(iOS) 
             TabView {
-                TaskListView()
+                TaskListView(storageProvider: storageProvider)
                     .tabItem {
                         Label("Tareas", systemImage: "checklist")
                     }
@@ -23,8 +27,8 @@ struct TaskApp: App {
                     .tabItem {
                         Label("Ajustes", systemImage: "gearshape")
                     }
-            }
-            .environmentObject(AppConfig())
+            }            .environmentObject(AppConfig())
+
             #else
             NavigationSplitView {
                 List(selection: $selectedDetailView) {
@@ -38,14 +42,16 @@ struct TaskApp: App {
             } detail: {
                 switch selectedDetailView {
                 case "tareas":
-                    TaskListView()
+                    TaskListView(storageProvider: storageProvider)
                 case "ajustes":
                     SettingsView()
                 default:
                     Text("Seleccione una opción")
                 }
-            }.environmentObject(AppConfig())
+            }            .environmentObject(AppConfig())
+
             #endif
+
         }
     }
 }

@@ -9,6 +9,11 @@ struct SettingsView: View {
                 Toggle("Show Due Dates", isOn: $appConfig.showDueDates)
                 Toggle("Show Priorities", isOn: $appConfig.showPriorities)
                 Toggle("Enable Reminders", isOn: $appConfig.enableReminders)
+                Picker("Storage Type", selection: $appConfig.storageType) {
+                    ForEach(StorageType.allCases) { type in
+                        Text(type.rawValue).tag(type)
+                    }
+                }
             }
         }
         .navigationTitle("Settings")
