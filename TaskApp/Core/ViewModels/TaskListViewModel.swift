@@ -13,7 +13,7 @@ class TaskListViewModel: ObservableObject {
     
     private let storageProvider: StorageProvider
     
-    init(storageProvider: StorageProvider = JSONStorageProvider()) {
+    init(storageProvider: StorageProvider = SwiftDataStorageProvider()) {
         self.storageProvider = storageProvider
     }
     

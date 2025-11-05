@@ -1,6 +1,9 @@
 import Foundation
 
 class JSONStorageProvider: StorageProvider {
+
+    static var shared: StorageProvider = JSONStorageProvider()
+
     private let fileURL: URL
     
     init(filename: String = "tasks.json") {

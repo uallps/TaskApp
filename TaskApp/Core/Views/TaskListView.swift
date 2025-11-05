@@ -9,8 +9,8 @@ import SwiftUI
 
 struct TaskListView: View {
     @StateObject private var viewModel: TaskListViewModel
-    
-    init(storageProvider: StorageProvider = JSONStorageProvider()){
+
+    init(storageProvider: StorageProvider) {
         _viewModel = StateObject(wrappedValue: TaskListViewModel(storageProvider: storageProvider))
     }
     
