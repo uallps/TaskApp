@@ -1,17 +1,20 @@
 import Foundation
 import SwiftData
 
-class SwiftDataStorageProvider: StorageProvider {
+class SwiftDataContext {
+    static var shared: ModelContext?
+}
 
-    static let shared = SwiftDataStorageProvider()
+class SwiftDataStorageProvider: StorageProvider {
 
     private let modelContainer: ModelContainer
     private let context: ModelContext
 
-    init(){
+    init(schema: Schema) {
         do {
-            self.modelContainer = try ModelContainer(for: Task.self)
+            self.modelContainer = try ModelContainer(for: schema)
             self.context = ModelContext(self.modelContainer)
+            SwiftDataContext.shared = self.context
         } catch {
             fatalError("Failed to initialize storage provider: \(error)")
        }
@@ -24,13 +27,24 @@ class SwiftDataStorageProvider: StorageProvider {
     }
 
     func saveTasks(tasks: [Task]) async throws {
-        let savedTasks = try await self.loadTasks()
-        for task in savedTasks {
-            context.delete(task)
+        let existingTasks = try await self.loadTasks()
+        let existingIds = Set(existingTasks.map { $0.id })
+        let newIds = Set(tasks.map { $0.id })
+        
+        // Delete tasks not in the new list
+        for existingTask in existingTasks where !newIds.contains(existingTask.id) {
+            context.delete(existingTask)
         }
+        
+        // Insert or update tasks
         for task in tasks {
-            context.insert(task)
+            if existingIds.contains(task.id) {
+                // Task exists, assume it's updated (since it's the same object or properties changed)
+            } else {
+                context.insert(task)
+            }
         }
+        
         try context.save()
     }
 }

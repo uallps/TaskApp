@@ -13,6 +13,13 @@ struct TaskRowView: View {
     let toggleCompletion : () -> Void
     
     @EnvironmentObject private var AppConfig: AppConfig
+    @StateObject private var dueDateViewModel: DueDateViewModel
+    
+    init(task: Task, toggleCompletion: @escaping () -> Void) {
+        self.task = task
+        self.toggleCompletion = toggleCompletion
+        self._dueDateViewModel = StateObject(wrappedValue: DueDateViewModel(task: task))
+    }
     
     var body: some View {
         HStack {
@@ -22,10 +29,8 @@ struct TaskRowView: View {
             VStack(alignment: .leading) {
                 Text(task.title)
                     .strikethrough(task.isCompleted)
-                if AppConfig.showDueDates, let dueDate = task.dueDate {
-                    Text("Vence: \(dueDate.formatted(date: .abbreviated, time: .shortened))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                if AppConfig.showDueDates {
+                    DueDateRowView(viewModel: dueDateViewModel)
                 }
                 if AppConfig.showPriorities, let priority = task.priority {
                     Text("Prioridad: \(priority.rawValue)")

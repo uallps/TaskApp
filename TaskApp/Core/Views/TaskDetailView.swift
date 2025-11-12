@@ -13,6 +13,13 @@ struct TaskDetailView: View {
     @Environment(\.dismiss) private var dismiss
 
     @EnvironmentObject private var AppConfig: AppConfig
+    @StateObject private var dueDateViewModel: DueDateViewModel
+    
+    init(task: Binding<Task>, onSave: (() -> Void)? = nil) {
+        self._task = task
+        self.onSave = onSave
+        self._dueDateViewModel = StateObject(wrappedValue: DueDateViewModel(task: task.wrappedValue))
+    }
     
     var body: some View {
         HStack() {
@@ -24,24 +31,7 @@ struct TaskDetailView: View {
                         Text("Completada")
                     }
                     if AppConfig.showDueDates {
-                        Toggle(isOn: Binding(
-                            get: { task.dueDate != nil },
-                            set: { newValue in
-                                if newValue {
-                                    task.dueDate = Date()
-                                } else {
-                                    task.dueDate = nil
-                                }
-                            }
-                        )) {
-                            Text("Vencimiento")
-                        }
-                        if let dueDate = task.dueDate {
-                            DatePicker("Fecha de Vencimiento", selection: Binding(
-                                get: { dueDate },
-                                set: { task.dueDate = $0 }
-                            ), displayedComponents: .date)
-                        }
+                        DueDateDetailView(viewModel: dueDateViewModel)
                     }
                     if AppConfig.showPriorities {
                         Picker("Prioridad", selection: Binding(
@@ -86,5 +76,5 @@ struct TaskDetailView: View {
 }
 
 #Preview {
-    TaskDetailView(task: .constant(Task(title: "Ejemplo de Tarea", isCompleted: false, dueDate: Date(), priority: .high)))
+    TaskDetailView(task: .constant(Task(title: "Ejemplo de Tarea", isCompleted: false, priority: .high)))
 }
