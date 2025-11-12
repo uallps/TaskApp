@@ -11,13 +11,12 @@ import SwiftData
 class Task: Identifiable, Codable {
 
     private enum CodingKeys: CodingKey {
-        case id, title, isCompleted, dueDate, priority, reminderDate
+        case id, title, isCompleted, priority, reminderDate
     }
 
     let id: UUID
     var title: String
     var isCompleted: Bool = false
-    var dueDate: Date? 
     var priority: Priority?
     var reminderDate: Date?
     
@@ -25,7 +24,6 @@ class Task: Identifiable, Codable {
         self.id = UUID()
         self.title = title
         self.isCompleted = isCompleted
-        self.dueDate = dueDate
         self.priority = priority
         self.reminderDate = reminderDate
     }
@@ -35,7 +33,6 @@ class Task: Identifiable, Codable {
         id = try container.decode(UUID.self, forKey: .id)
         title = try container.decode(String.self, forKey: .title)
         isCompleted = try container.decode(Bool.self, forKey: .isCompleted)
-        dueDate = try container.decodeIfPresent(Date.self, forKey: .dueDate)
         priority = try container.decodeIfPresent(Priority.self, forKey: .priority)
         reminderDate = try container.decodeIfPresent(Date.self, forKey: .reminderDate)
     }
@@ -45,7 +42,6 @@ class Task: Identifiable, Codable {
         try container.encode(id, forKey: .id)
         try container.encode(title, forKey: .title)
         try container.encode(isCompleted, forKey: .isCompleted)
-        try container.encodeIfPresent(dueDate, forKey: .dueDate)
         try container.encodeIfPresent(priority, forKey: .priority)
         try container.encodeIfPresent(reminderDate, forKey: .reminderDate)
     }

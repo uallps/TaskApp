@@ -13,12 +13,12 @@ class TaskListViewModel: ObservableObject {
     
     private let storageProvider: StorageProvider
     
-    init(storageProvider: StorageProvider = SwiftDataStorageProvider()) {
+    init(storageProvider: StorageProvider) {
         self.storageProvider = storageProvider
     }
     
     @Published var tasks: [Task] = [
-        Task(title: "Comprar leche", dueDate: Date().addingTimeInterval(86400)),
+        Task(title: "Comprar leche"),
         Task(title: "Hacer ejercicio", priority: .high),
         Task(title: "Llamar a mamá")
     ]
@@ -37,8 +37,21 @@ class TaskListViewModel: ObservableObject {
     }
     
     func removeTasks(atOffsets offsets: IndexSet) async{
+        let tasksToDelete = offsets.map { tasks[$0] }
+        
+        // Notificar a los plugins ANTES de eliminar las tareas
+        for task in tasksToDelete {
+            await PluginRegistry.shared.notifyTaskWillBeDeleted(task)
+        }
+        
+        // Eliminar las tareas
         tasks.remove(atOffsets: offsets)
         try? await storageProvider.saveTasks(tasks: tasks)
+        
+        // Notificar a los plugins DESPUÉS de eliminar las tareas
+        for task in tasksToDelete {
+            await PluginRegistry.shared.notifyTaskDidDelete(taskId: task.id)
+        }
     }
     
     func toggleCompletion(task: Task) async {
