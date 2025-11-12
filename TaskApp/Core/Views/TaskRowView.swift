@@ -13,12 +13,10 @@ struct TaskRowView: View {
     let toggleCompletion : () -> Void
     
     @EnvironmentObject private var AppConfig: AppConfig
-    @StateObject private var dueDateViewModel: DueDateViewModel
     
     init(task: Task, toggleCompletion: @escaping () -> Void) {
         self.task = task
         self.toggleCompletion = toggleCompletion
-        self._dueDateViewModel = StateObject(wrappedValue: DueDateViewModel(task: task))
     }
     
     var body: some View {
@@ -29,9 +27,12 @@ struct TaskRowView: View {
             VStack(alignment: .leading) {
                 Text(task.title)
                     .strikethrough(task.isCompleted)
-                if AppConfig.showDueDates {
-                    DueDateRowView(viewModel: dueDateViewModel)
+                
+                // Vistas proporcionadas por los plugins
+                ForEach(Array(PluginRegistry.shared.getTaskRowViews(for: task).enumerated()), id: \.offset) { _, view in
+                    view
                 }
+                
                 if AppConfig.showPriorities, let priority = task.priority {
                     Text("Prioridad: \(priority.rawValue)")
                         .font(.caption)

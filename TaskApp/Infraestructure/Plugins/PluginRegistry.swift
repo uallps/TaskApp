@@ -6,30 +6,7 @@
 //
 import Foundation
 import SwiftData
-
-/// Protocol que deben implementar todos los plugins de características
-protocol FeaturePlugin: AnyObject {
-    /// Modelos de datos que el plugin necesita persistir
-    var models: [any PersistentModel.Type] { get }
-    
-    /// Indica si el plugin está habilitado
-    var isEnabled: Bool { get }
-    
-    /// Inicializador requerido para crear instancias del plugin
-    /// - Parameter config: Configuración de la aplicación
-    init(config: AppConfig)
-}
-
-/// Protocol para plugins que gestionan datos y necesitan ser notificados de eventos
-protocol DataPlugin: FeaturePlugin {
-    /// Se llama cuando se va a eliminar un Task
-    /// - Parameter task: La tarea que será eliminada
-    func willDeleteTask(_ task: Task) async
-    
-    /// Se llama después de eliminar un Task
-    /// - Parameter taskId: ID de la tarea eliminada
-    func didDeleteTask(taskId: UUID) async
-}
+import SwiftUI
 
 /// Registro centralizado de plugins de características
 class PluginRegistry {
@@ -114,5 +91,33 @@ class PluginRegistry {
     /// Obtiene el número de plugins registrados
     var count: Int {
         return registeredPlugins.count
+    }
+    
+    /// Obtiene todas las vistas de fila de plugins para una tarea específica
+    /// - Parameter task: La tarea para la cual obtener las vistas
+    /// - Returns: Array de vistas proporcionadas por los plugins habilitados
+    func getTaskRowViews(for task: Task) -> [AnyView] {
+        return pluginInstances
+            .compactMap { $0 as? ViewPlugin }
+            .filter { $0.isEnabled }
+            .map { AnyView($0.taskRowView(for: task)) }
+    }
+    
+    /// Obtiene todas las vistas de detalle de plugins para una tarea específica
+    /// - Parameter task: Binding a la tarea para la cual obtener las vistas
+    /// - Returns: Array de vistas proporcionadas por los plugins habilitados
+    func getTaskDetailViews(for task: Binding<Task>) -> [AnyView] {
+        return pluginInstances
+            .compactMap { $0 as? ViewPlugin }
+            .filter { $0.isEnabled }
+            .map { AnyView($0.taskDetailView(for: task)) }
+    }
+    
+    /// Obtiene todas las vistas de configuración de los plugins
+    /// - Returns: Array de vistas de configuración proporcionadas por los plugins
+    func getPluginSettingsViews() -> [AnyView] {
+        return pluginInstances
+            .compactMap { $0 as? ViewPlugin }
+            .map { AnyView($0.settingsView()) }
     }
 }
