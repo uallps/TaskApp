@@ -13,12 +13,10 @@ struct TaskDetailView: View {
     @Environment(\.dismiss) private var dismiss
 
     @EnvironmentObject private var AppConfig: AppConfig
-    @StateObject private var dueDateViewModel: DueDateViewModel
     
     init(task: Binding<Task>, onSave: (() -> Void)? = nil) {
         self._task = task
         self.onSave = onSave
-        self._dueDateViewModel = StateObject(wrappedValue: DueDateViewModel(task: task.wrappedValue))
     }
     
     var body: some View {
@@ -30,8 +28,10 @@ struct TaskDetailView: View {
                     Toggle(isOn: $task.isCompleted) {
                         Text("Completada")
                     }
-                    if AppConfig.showDueDates {
-                        DueDateDetailView(viewModel: dueDateViewModel)
+                    
+                    // Vistas de detalle proporcionadas por los plugins
+                    ForEach(Array(PluginRegistry.shared.getTaskDetailViews(for: $task).enumerated()), id: \.offset) { _, view in
+                        view
                     }
                     if AppConfig.showPriorities {
                         Picker("Prioridad", selection: Binding(

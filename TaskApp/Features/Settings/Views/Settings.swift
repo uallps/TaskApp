@@ -5,8 +5,14 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
+            Section(header: Text("Features")) {
+                // Vistas de configuración proporcionadas por los plugins
+                ForEach(Array(PluginRegistry.shared.getPluginSettingsViews().enumerated()), id: \.offset) { _, view in
+                    view
+                }
+            }
+            
             Section(header: Text("General")) {
-                Toggle("Show Due Dates", isOn: $appConfig.showDueDates)
                 Toggle("Show Priorities", isOn: $appConfig.showPriorities)
                 Toggle("Enable Reminders", isOn: $appConfig.enableReminders)
                 Picker("Storage Type", selection: $appConfig.storageType) {
