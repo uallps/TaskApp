@@ -26,8 +26,13 @@ class AppConfig: ObservableObject {
     private var plugins: [FeaturePlugin] = []
     
     init() {
-        // Registrar plugins disponibles al inicializar
-        PluginRegistry.shared.register(DueDatePlugin.self)
+        // Descubrir y registrar plugins automáticamente
+        let discoveredPlugins = PluginDiscovery.discoverPlugins()
+        for pluginType in discoveredPlugins {
+            PluginRegistry.shared.register(pluginType)
+        }
+        
+        print("📝 Plugins registrados en AppConfig: \(PluginRegistry.shared.count)")
         
         // Crear instancias de los plugins
         self.plugins = PluginRegistry.shared.createPluginInstances(config: self)
