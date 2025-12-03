@@ -82,33 +82,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download all build artifacts
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ios-build
-          path: ./artifacts/ios
-
-      - name: Download macOS build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-build
-          path: ./artifacts/macos
+          path: ./artifacts
 
       - name: Prepare release artifacts
         run: |
-          echo "Zipping iOS artifacts..."
-          if [ -d ./artifacts/ios ]; then
-            (cd ./artifacts/ios && zip -r ../ios-build.zip .) || true
-          else
-            echo "No iOS artifacts found at ./artifacts/ios"
-          fi
-
-          echo "Zipping macOS artifacts..."
-          if [ -d ./artifacts/macos ]; then
-            (cd ./artifacts/macos && zip -r ../macos-build.zip .) || true
-          else
-            echo "No macOS artifacts found at ./artifacts/macos"
-          fi
+          echo "Creating zip files for all artifacts..."
+          cd ./artifacts
+          for artifact_dir in */; do
+            artifact_name="${artifact_dir%/}"
+            echo "Zipping $artifact_name..."
+            (cd "$artifact_dir" && zip -r "../${artifact_name}.zip" .) || true
+          done
+          cd ..
+          echo "Generated zip files:"
+          ls -lh ./artifacts/*.zip
 
       - name: Get version from commit
         id: version
@@ -129,7 +119,7 @@ jobs:
           echo "$CHANGES" > changes.txt
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: Release ${{ steps.version.outputs.version }}
@@ -138,8 +128,7 @@ jobs:
           prerelease: false
           generate_release_notes: true
           files: |
-            artifacts/ios-build.zip
-            artifacts/macos-build.zip
+            artifacts/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
