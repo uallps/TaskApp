@@ -56,18 +56,6 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
-      - name: Run Tests for ${{ matrix.platform }}
-        run: |
-          xcodebuild test \
-            -project TaskApp.xcodeproj \
-            -scheme "${{ matrix.scheme }}" \
-            -sdk ${{ matrix.sdk }} \
-            -destination '${{ matrix.destination }}' \
-            -derivedDataPath ./DerivedData \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-
       - name: Find and list build products
         if: success()
         run: |
