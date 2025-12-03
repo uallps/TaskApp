@@ -14,7 +14,9 @@ struct SettingsView: View {
             
             Section(header: Text("General")) {
                 Toggle("Show Priorities", isOn: $appConfig.showPriorities)
+#if PREMIUM
                 Toggle("Enable Reminders", isOn: $appConfig.enableReminders)
+#endif
                 Picker("Storage Type", selection: $appConfig.storageType) {
                     ForEach(StorageType.allCases) { type in
                         Text(type.rawValue).tag(type)

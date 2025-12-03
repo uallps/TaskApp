@@ -4,10 +4,33 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>TaskApp.xcscheme_^#shared#^_</key>
+		<key>TaskApp copy.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>TaskApp.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>85889C502EE0900A00CBEFD1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8589EB2D2E9FF1BD0058A137</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>85AB83072ECE2CD500E6B6D2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

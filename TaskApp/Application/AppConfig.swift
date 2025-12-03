@@ -15,8 +15,12 @@ class AppConfig: ObservableObject {
     @AppStorage("showPriorities")
     var showPriorities: Bool = true
 
+#if PREMIUM
     @AppStorage("enableReminders")
     var enableReminders: Bool = true
+#else
+    var enableReminders: Bool { false }
+#endif
 
     @AppStorage("storageType")
     var storageType: StorageType = .json

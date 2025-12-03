@@ -18,11 +18,13 @@ permissions:
 
 jobs:
   build:
-    name: Build for ${{ matrix.platform }}
+    name: Build ${{ matrix.scheme }} for ${{ matrix.platform }}
     runs-on: macos-latest
 
     strategy:
       matrix:
+        platform: [iOS, macOS]
+        scheme: ["TaskApp", "TaskApp Premium"]
         include:
           - platform: iOS
             sdk: iphonesimulator
@@ -31,7 +33,6 @@ jobs:
           - platform: macOS
             sdk: macosx
             destination: "platform=macOS"
-            artifact-name: macos-build
 
     steps:
       - name: Checkout code
@@ -47,7 +48,19 @@ jobs:
         run: |
           xcodebuild clean build \
             -project TaskApp.xcodeproj \
-            -scheme TaskApp \
+            -scheme "${{ matrix.scheme }}" \
+            -sdk ${{ matrix.sdk }} \
+            -destination '${{ matrix.destination }}' \
+            -derivedDataPath ./DerivedData \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Run Tests for ${{ matrix.platform }}
+        run: |
+          xcodebuild test \
+            -project TaskApp.xcodeproj \
+            -scheme "${{ matrix.scheme }}" \
             -sdk ${{ matrix.sdk }} \
             -destination '${{ matrix.destination }}' \
             -derivedDataPath ./DerivedData \
@@ -58,7 +71,7 @@ jobs:
       - name: Find and list build products
         if: success()
         run: |
-          echo "=== ${{ matrix.platform }} Build products ==="
+          echo "=== ${{ matrix.platform }} ${{ matrix.scheme }} Build products ==="
           find ./DerivedData -name "*.app" -type d
           ls -R ./DerivedData/Build/Products/
 
@@ -66,7 +79,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact-name }}
+          name: build-${{ matrix.platform }}-${{ matrix.scheme }}
           path: ./DerivedData/Build/Products/**/*.app
 
   create-release:
@@ -81,7 +94,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download iOS build artifacts
+      - name: Download all build artifacts
         uses: actions/download-artifact@v4
         with:
           name: ios-build
@@ -92,7 +105,7 @@ jobs:
         with:
           name: macos-build
           path: ./artifacts/macos
- 
+
       - name: Prepare release artifacts
         run: |
           echo "Zipping iOS artifacts..."
